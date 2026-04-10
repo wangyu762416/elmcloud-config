@@ -1,0 +1,92 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: api-gateway
+  
+  cloud:
+    gateway:
+      discovery:
+        locator:
+          enabled: true  # 启用服务发现自动路由
+          lower-case-service-id: true
+      
+      routes:
+        # 用户服务 - 认证路由（无需鉴权）
+        - id: user-service-auth
+          uri: lb://user-service
+          predicates:
+            - Path=/api/auth/**
+        
+        # 用户服务 - 注册路由（无需鉴权）
+        - id: user-service-register
+          uri: lb://user-service
+          predicates:
+            - Path=/api/users/register
+        
+        # 用户服务 - 用户管理路由
+        - id: user-service-users
+          uri: lb://user-service
+          predicates:
+            - Path=/api/users/**
+        
+        # 用户服务 - 地址管理路由
+        - id: user-service-addresses
+          uri: lb://user-service
+          predicates:
+            - Path=/api/addresses/**
+        
+        # 订单服务 - 订单路由
+        - id: order-service-orders
+          uri: lb://order-service
+          predicates:
+            - Path=/api/orders/**
+        
+        # 订单服务 - 购物车路由
+        - id: order-service-carts
+          uri: lb://order-service
+          predicates:
+            - Path=/api/carts/**
+        
+        # 商家服务 - 商家路由
+        - id: business-service-businesses
+          uri: lb://business-service
+          predicates:
+            - Path=/api/businesses/**
+        
+        # 商家服务 - 食品路由
+        - id: business-service-foods
+          uri: lb://business-service
+          predicates:
+            - Path=/api/foods/**
+        
+        # 钱包服务路由
+        - id: wallet-service
+          uri: lb://wallet-service
+          predicates:
+            - Path=/api/wallet/**
+        
+        # VIP服务 - VIP路由
+        - id: vip-service-vip
+          uri: lb://vip-service
+          predicates:
+            - Path=/api/vip/**
+
+# Eureka 客户端配置
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+
+# 管理端点配置
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,gateway
+
+logging:
+  level:
+    cn.edu.tju: DEBUG
+    org.springframework.cloud.gateway: DEBUG
