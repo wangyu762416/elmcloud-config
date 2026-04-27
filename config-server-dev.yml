@@ -10,7 +10,7 @@ spring:
       server:
         native:
           search-locations: classpath:/config
-    
+
   profiles:
     active: native  # 使用本地文件系统配置，无需Git
 
@@ -19,6 +19,31 @@ eureka:
   client:
     service-url:
       defaultZone: http://localhost:8761/eureka/
+
+# Feign 全局配置
+feign:
+  circuitbreaker:
+    enabled: true # 开启熔断降级开关
+  client:
+    config:
+      default:
+        connectTimeout: 5000
+        readTimeout: 5000
+
+# Resilience4j 熔断规则全局默认配置
+resilience4j:
+  circuitbreaker:
+    configs:
+      default:
+        slidingWindowSize: 10              # 窗口大小
+        failureRateThreshold: 50           # 失败率阈值
+        minimumNumberOfCalls: 5            # 最小调用次数
+        waitDurationInOpenState: 10000ms   # 熔断后冷却时间
+        permittedNumberOfCallsInHalfOpenState: 3
+  timelimiter:
+    configs:
+      default:
+        timeoutDuration: 3s                # 超时自动触发熔断的时间
 
 # 管理端点配置
 management:

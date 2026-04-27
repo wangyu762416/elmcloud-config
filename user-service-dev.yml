@@ -2,12 +2,20 @@ server:
   port: 8081
 
 spring:
+  application:
+    name: user-service
+
+  config:
+    import: optional:configserver:http://localhost:8888
+
   datasource:
     url: jdbc:h2:mem:userdb;DB_CLOSE_DELAY=-1
     driver-class-name: org.h2.Driver
     username: sa
     password: password
+
   jpa:
+    defer-datasource-initialization: true
     hibernate:
       ddl-auto: create-drop
     show-sql: true
@@ -15,25 +23,40 @@ spring:
       hibernate:
         dialect: org.hibernate.dialect.H2Dialect
         format_sql: true
+
   h2:
     console:
       enabled: true
       path: /h2-console
+
   sql:
     init:
       mode: always
       encoding: UTF-8
 
+# JWT 配置
 jwt:
   base64-secret: ZmQ0ZGI5NjQ0MDQwY2I4MjMxY2Y3ZmI3MjdhN2ZmMjNhODViOTg1ZGE0NTBjMGM4NDA5NzYxMjdjOWMwYWRmZTBlZjlhNGY3ZTg4Y2U3YTE1ODVkZDU5Y2Y3OGYwZWE1NzUzNWQ2YjFjZDc0NGMxZWU2MmQ3MjY1NzJmNTE0MzI=
   token-validity-in-seconds: 86400
   token-validity-in-seconds-for-remember-me: 108000
 
+# Feign 客户端配置
+feign:
+  circuitbreaker:
+    enabled: true
+  client:
+    config:
+      default:
+        connectTimeout: 5000
+        readTimeout: 5000
+
+# Eureka 客户端配置
 eureka:
   client:
     service-url:
       defaultZone: http://localhost:8761/eureka/
 
+# 管理端点配置
 management:
   endpoints:
     web:

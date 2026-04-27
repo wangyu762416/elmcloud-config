@@ -7,71 +7,163 @@ spring:
   
   cloud:
     gateway:
+      globalcors:
+        add-to-simple-url-handler-mapping: true
+        cors-configurations:
+          '[/**]':
+            allowed-origin-patterns:
+              - "*"
+            allowed-methods:
+              - GET
+              - POST
+              - PUT
+              - DELETE
+              - OPTIONS
+            allowed-headers:
+              - "*"
+            exposed-headers:
+              - Authorization
+            allow-credentials: false
+            max-age: 3600
       discovery:
         locator:
           enabled: true  # 启用服务发现自动路由
           lower-case-service-id: true
-      
+
       routes:
         # 用户服务 - 认证路由（无需鉴权）
         - id: user-service-auth
           uri: lb://user-service
           predicates:
             - Path=/api/auth/**
-        
+
         # 用户服务 - 注册路由（无需鉴权）
         - id: user-service-register
           uri: lb://user-service
           predicates:
             - Path=/api/users/register
-        
+
+        # 用户服务 - 兼容注册路由（无需鉴权）
+        - id: user-service-register-compat
+          uri: lb://user-service
+          predicates:
+            - Path=/api/register
+
+        # 用户服务 - 获取当前用户（兼容单体接口）
+        - id: user-service-user
+          uri: lb://user-service
+          predicates:
+            - Path=/api/user
+
+        # 用户服务 - 按ID查用户是否存在（兼容单体接口）
+        - id: user-service-userById
+          uri: lb://user-service
+          predicates:
+            - Path=/api/userById
+
+        # 用户服务 - 按ID+密码查用户（兼容单体接口）
+        - id: user-service-userByIdByPass
+          uri: lb://user-service
+          predicates:
+            - Path=/api/userByIdByPass
+
+        # 用户服务 - 修改密码（兼容单体接口）
+        - id: user-service-password
+          uri: lb://user-service
+          predicates:
+            - Path=/api/password
+
+        # 用户服务 - 新增自然人（兼容单体接口）
+        - id: user-service-persons
+          uri: lb://user-service
+          predicates:
+            - Path=/api/persons/**
+
+        # 用户服务 - 按用户名查用户（兼容单体接口）
+        - id: user-service-userByUsername
+          uri: lb://user-service
+          predicates:
+            - Path=/api/userByUsername
+
+        # 用户服务 - 按用户名查用户是否存在（兼容单体接口）
+        - id: user-service-userExistsByUsername
+          uri: lb://user-service
+          predicates:
+            - Path=/api/userExistsByUsername
+
+        # 用户服务 - 按用户ID查地址（兼容单体接口）
+        - id: user-service-addressesByUserId
+          uri: lb://user-service
+          predicates:
+            - Path=/api/addressesByUserId
+
+        # 用户服务 - 按地址ID查地址（兼容单体接口）
+        - id: user-service-addressById
+          uri: lb://user-service
+          predicates:
+            - Path=/api/addressById
+
         # 用户服务 - 用户管理路由
         - id: user-service-users
           uri: lb://user-service
           predicates:
             - Path=/api/users/**
-        
+
         # 用户服务 - 地址管理路由
         - id: user-service-addresses
           uri: lb://user-service
           predicates:
             - Path=/api/addresses/**
-        
+
         # 订单服务 - 订单路由
         - id: order-service-orders
           uri: lb://order-service
           predicates:
             - Path=/api/orders/**
-        
+
         # 订单服务 - 购物车路由
         - id: order-service-carts
           uri: lb://order-service
           predicates:
             - Path=/api/carts/**
-        
+
         # 商家服务 - 商家路由
         - id: business-service-businesses
           uri: lb://business-service
           predicates:
             - Path=/api/businesses/**
-        
+
         # 商家服务 - 食品路由
         - id: business-service-foods
           uri: lb://business-service
           predicates:
             - Path=/api/foods/**
-        
+
+        # 钱包服务 - 奖励规则路由（兼容单体接口）
+        - id: wallet-service-reward-rules
+          uri: lb://wallet-service
+          predicates:
+            - Path=/api/reward-rules/**
+
         # 钱包服务路由
         - id: wallet-service
           uri: lb://wallet-service
           predicates:
             - Path=/api/wallet/**
-        
+
+        # VIP服务 - 积分路由（兼容单体接口）
+        - id: vip-service-integral
+          uri: lb://vip-service
+          predicates:
+            - Path=/api/integral/**
+
         # VIP服务 - VIP路由
         - id: vip-service-vip
           uri: lb://vip-service
           predicates:
             - Path=/api/vip/**
+  config:
+    import: optional:configserver:http://localhost:8888
 
 # Eureka 客户端配置
 eureka:

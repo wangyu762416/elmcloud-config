@@ -4,6 +4,8 @@ server:
 spring:
   application:
     name: eureka-server
+  config:
+    import: optional:configserver:http://localhost:8888
 
 # Eureka 配置
 eureka:
@@ -16,7 +18,7 @@ eureka:
       defaultZone: http://${eureka.instance.hostname}:${server.port}/eureka/
   server:
     enable-self-preservation: false  # 开发环境关闭自我保护模式
-    
+
 # 管理端点配置
 management:
   endpoints:
